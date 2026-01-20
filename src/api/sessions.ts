@@ -1,7 +1,7 @@
 import type { Session, ExerciseSet } from "../types/session";
 import axios from "axios";
 
-const baseUrl = import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const getAuthHeader = () => {
   const token = localStorage.getItem("token");

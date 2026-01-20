@@ -2,7 +2,7 @@ import axios from "axios";
 import type { WellnessLog } from "../types/wellness";
 
 const baseUrl =
-  import.meta.env.VITE_API_BASE_URL || "http://localhost:3000";
+  import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const getAuthHeader = () => {
   const token = localStorage.getItem("token");
