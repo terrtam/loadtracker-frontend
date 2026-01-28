@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import BodyPartSidebar from "../components/BodyPartSidebar";
-import { listSessions } from "../api/sessions";
-import { loadAppConfig } from "../config/loadConfig";
+import BodyPartSidebar from "../../src/features/profiles/components/BodyPartSidebar";
+import { listSessions } from "../features/sessions/api";
+import { loadAppConfig } from "../shared/config/loadConfig";
 import type { AppConfig } from "../types/appConfig";
-import type { Session } from "../types/session";
+import type { Session } from "../features/sessions/types";
 
 export default function SessionHistoryPage() {
   /* -------------------------

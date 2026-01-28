@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import BodyPartSidebar from "../components/BodyPartSidebar";
-import { listWellnessLogs } from "../api/wellness";
-import type { WellnessLog } from "../types/wellness";
+import BodyPartSidebar from "../features/profiles/components/BodyPartSidebar";
+import { listWellnessLogs } from "../features/wellness/api";
+import type { WellnessLog } from "../features/wellness/types";
 
 export default function WellnessHistoryPage() {
   /* -------------------------

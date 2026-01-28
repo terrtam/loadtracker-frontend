@@ -1,7 +1,7 @@
 import { useState } from "react";
-import BodyPartSidebar from "../components/BodyPartSidebar";
-import type { BodyPartProfile } from "../types/bodyPartProfile";
-import { createWellnessLog } from "../api/wellness";
+import BodyPartSidebar from "../features/profiles/components/BodyPartSidebar";
+import type { BodyPartProfile } from "../features/profiles/types";
+import { createWellnessLog } from "../features/wellness/api";
 import axios from "axios";
 
 export default function WellnessLogPage() {

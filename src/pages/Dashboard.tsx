@@ -1,11 +1,11 @@
 import { useState } from "react";
-import SidebarLayout from "../components/layout/SidebarLayout";
-import DashboardSidebar from "../components/Sidebar/DashboardSidebar";
-import CreateBodyPartProfile from "../components/Profiles/CreateBodyPartProfile";
-import WellnessCharts from "../components/wellness/WellnessCharts";
-import VolumeCharts from "../components/volume/VolumeCharts";
-import type { BodyPartProfile } from "../types/bodyPartProfile";
-import { useDashboardAggregation } from "../hooks/useDashboardAggregation";
+import SidebarLayout from "../shared/layout/SidebarLayout";
+import DashboardSidebar from "../shared/layout/DashboardSidebar";
+import CreateBodyPartProfile from "../features/profiles/components/CreateBodyPartProfile";
+import WellnessCharts from "../features/wellness/components/WellnessCharts";
+import VolumeCharts from "../features/volume/components/VolumeCharts";
+import type { BodyPartProfile } from "../features/profiles/types";
+import { useDashboardAggregation } from "../features/dashboard/useDashboardAggregation";
 
 export default function Dashboard() {
   const [showCreate, setShowCreate] = useState(false);

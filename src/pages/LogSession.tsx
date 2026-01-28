@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { loadAppConfig } from "../config/loadConfig";
+import { loadAppConfig } from "../shared/config/loadConfig";
 import type { AppConfig } from "../types/appConfig";
-import type { SessionState, ExerciseSet } from "../types/session";
-import ExerciseSidebar from "../components/ExerciseSidebar";
-import { createSession } from "../api/sessions";
-import SidebarLayout from "../components/layout/SidebarLayout";
+import type { SessionState, ExerciseSet } from "../features/sessions/types";
+import ExerciseSidebar from "../features/sessions/components/ExerciseSidebar";
+import { createSession } from "../features/sessions/api";
+import SidebarLayout from "../shared/layout/SidebarLayout";
 
 const STORAGE_KEY = "draft_session_v1";
 
