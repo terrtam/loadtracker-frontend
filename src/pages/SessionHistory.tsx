@@ -9,16 +9,18 @@
  */
 
 import { useEffect, useState } from "react";
-import BodyPartSidebar from "../../src/features/profiles/components/BodyPartSidebar";
+import BodyPartSidebar from "../features/profiles/components/BodyPartSidebar";
 import { listSessions } from "../features/sessions/api";
 import { loadAppConfig } from "../shared/config/loadConfig";
 import type { AppConfig } from "../types/appConfig";
 import type { Session } from "../features/sessions/types";
+import type { BodyPartProfile } from "../features/profiles/types";
 
 export default function SessionHistoryPage() {
   const [config, setConfig] = useState<AppConfig | null>(null);
-  const [selectedBodyPartCode, setSelectedBodyPartCode] = useState<string | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [selectedProfile, setSelectedProfile] =
+    useState<BodyPartProfile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -57,37 +59,34 @@ export default function SessionHistoryPage() {
       return {
         ...set,
         exerciseName: exercise?.name ?? set.exerciseCode,
-        bodyParts: exercise?.bodyParts ?? [],
         sessionDate: session.date,
         setTypeConfig,
       };
     })
   );
 
-  const filteredSets = allSets.filter((set) =>
-    selectedBodyPartCode
-      ? set.bodyParts.includes(selectedBodyPartCode)
-      : true
-  );
-
-  const activeBodyPartLabel = selectedBodyPartCode
-    ? config.bodyParts[selectedBodyPartCode]
-    : "All Body Parts";
+  const filteredSets = selectedProfile
+    ? allSets.filter(
+        (set) => set.bodyPartProfileId === selectedProfile.id
+      )
+    : allSets;
 
   return (
     <div className="flex h-full">
       <BodyPartSidebar
-        selectedBodyPartCode={selectedBodyPartCode}
-        onSelect={setSelectedBodyPartCode}
-        includeAllOption
+        selectedProfileId={selectedProfile?.id ?? null}
+        onSelectProfile={setSelectedProfile}
       />
 
       <main className="flex-1 max-w-3xl p-6">
         <h1 className="text-2xl font-bold">Session History</h1>
+
         <div className="mb-4 mt-1 text-sm text-muted-foreground">
           Showing:{" "}
           <span className="font-medium text-foreground">
-            {activeBodyPartLabel}
+            {selectedProfile
+              ? `${selectedProfile.bodyPartName} (${selectedProfile.side})`
+              : "All Body Parts"}
           </span>
         </div>
 
@@ -116,35 +115,46 @@ export default function SessionHistoryPage() {
                     day: "2-digit",
                   })}
                 </div>
+
                 <div className="w-32 shrink-0 font-medium truncate">
                   {set.exerciseName}
                 </div>
+
                 <div className="flex gap-4">
                   {set.setTypeConfig &&
-                    Object.keys(set.setTypeConfig.fields).sort((a, b) => {
-                      if (a === "weight") return -1;
-                      if (b === "weight") return 1;
-                      return 0;
-                    }).map((fieldKey) => {
-                      const value = set.fields[fieldKey];
-                      if (value == null) return null;
+                    Object.keys(set.setTypeConfig.fields)
+                      .sort((a, b) => {
+                        if (a === "weight") return -1;
+                        if (b === "weight") return 1;
+                        return 0;
+                      })
+                      .map((fieldKey) => {
+                        const value = set.fields[fieldKey];
+                        if (value == null) return null;
 
-                      switch (fieldKey) {
-                        case "reps":
-                          return <span key={fieldKey}>{value} reps</span>;
-                        case "weight":
-                          return <span key={fieldKey}>{value} lb</span>;
-                        case "durationSeconds":
-                          return <span key={fieldKey}>{value}s</span>;
-                        default:
-                          return (
-                            <span key={fieldKey}>
-                              {fieldKey}: {value}
-                            </span>
-                          );
-                      }
-                    })}
+                        switch (fieldKey) {
+                          case "reps":
+                            return (
+                              <span key={fieldKey}>{value} reps</span>
+                            );
+                          case "weight":
+                            return (
+                              <span key={fieldKey}>{value} lb</span>
+                            );
+                          case "durationSeconds":
+                            return (
+                              <span key={fieldKey}>{value}s</span>
+                            );
+                          default:
+                            return (
+                              <span key={fieldKey}>
+                                {fieldKey}: {value}
+                              </span>
+                            );
+                        }
+                      })}
                 </div>
+
                 {set.rpe != null && (
                   <div className="ml-auto text-xs text-muted-foreground">
                     RPE {set.rpe}

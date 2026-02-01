@@ -1,46 +1,58 @@
-/** Page for Wellness History.
- *  Manage sidebar selection state.
- *  Load Wellness History from listWellnessLogs API.
- *  Render Wellness History.
- *  */
-
 import { useEffect, useState } from "react";
 import BodyPartSidebar from "../features/profiles/components/BodyPartSidebar";
 import { listWellnessLogs } from "../features/wellness/api";
 import type { WellnessLog } from "../features/wellness/types";
+import type { BodyPartProfile } from "../features/profiles/types";
 
 export default function WellnessHistoryPage() {
-  const [selectedBodyPartCode, setSelectedBodyPartCode] = useState<string | null>(null);
+  const [selectedProfile, setSelectedProfile] =
+    useState<BodyPartProfile | null>(null);
   const [logs, setLogs] = useState<WellnessLog[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadLogs = async () => {
       setLoading(true);
-
-      const data = await listWellnessLogs();
-
-      setLogs(data);
-      setLoading(false);
+      try {
+        const data = await listWellnessLogs();
+        setLogs(data);
+      } finally {
+        setLoading(false);
+      }
     };
 
     loadLogs();
-  }, [selectedBodyPartCode]);
+  }, []);
+
+  const filteredLogs = selectedProfile
+    ? logs.filter(
+        (log) =>
+          log.bodyPartProfile.id === selectedProfile.id
+      )
+    : logs;
 
   return (
     <div className="flex h-full">
       {/* Sidebar */}
       <BodyPartSidebar
-        selectedBodyPartCode={selectedBodyPartCode}
-        onSelect={setSelectedBodyPartCode}
-        includeAllOption
+        selectedProfileId={selectedProfile?.id ?? null}
+        onSelectProfile={setSelectedProfile}
       />
 
       {/* Main */}
       <main className="flex-1 max-w-3xl p-4">
-        <h1 className="mb-4 text-xl font-semibold">
+        <h1 className="mb-1 text-xl font-semibold">
           Wellness History
         </h1>
+
+        <div className="mb-4 text-sm text-muted-foreground">
+          Showing:{" "}
+          <span className="font-medium text-foreground">
+            {selectedProfile
+              ? `${selectedProfile.bodyPartName} (${selectedProfile.side})`
+              : "All Body Parts"}
+          </span>
+        </div>
 
         {loading && (
           <div className="text-sm text-muted-foreground">
@@ -48,15 +60,15 @@ export default function WellnessHistoryPage() {
           </div>
         )}
 
-        {!loading && logs.length === 0 && (
+        {!loading && filteredLogs.length === 0 && (
           <div className="rounded border border-dashed p-3 text-sm text-muted-foreground">
             No wellness entries found.
           </div>
         )}
 
-        {!loading && logs.length > 0 && (
+        {!loading && filteredLogs.length > 0 && (
           <div className="divide-y rounded border">
-            {logs.map((log) => (
+            {filteredLogs.map((log) => (
               <div
                 key={log.id}
                 className="flex items-center justify-between px-3 py-2 text-sm"

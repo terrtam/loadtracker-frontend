@@ -81,7 +81,7 @@ export default function WellnessLogPage() {
   return (
     <div className="flex h-full">
       <BodyPartSidebar
-        selectedBodyPartCode={null}
+        selectedProfileId={selectedProfile?.id ?? null}
         onSelectProfile={setSelectedProfile}
       />
 
