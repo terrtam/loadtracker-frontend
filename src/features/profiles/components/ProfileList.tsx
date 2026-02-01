@@ -1,3 +1,9 @@
+/** Component for Body Part Profile List.
+ *  Renders a titled list of profiles (active or archived).
+ *  Supports adding new profiles.
+ *  Delegates per-item actions (select, archive, unarchive) to ProfileItem.
+ */
+
 import type { BodyPartProfile } from "../types";
 import ProfileItem from "./ProfileItem";
 
@@ -11,15 +17,8 @@ type Props = {
   onChange: () => void;
 };
 
-export default function ProfileList({
-  title,
-  profiles,
-  action,
-  selectedProfile,
-  onSelectProfile,
-  onAdd,
-  onChange,
-}: Props) {
+export default function ProfileList({ title, profiles, action, selectedProfile,
+  onSelectProfile, onAdd, onChange,}: Props) {
   return (
     <div className="mb-6">
       <div className="flex justify-between items-center mb-2">

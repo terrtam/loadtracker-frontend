@@ -1,5 +1,7 @@
+/** Time-series point containing volume and intensity values. */
+
 export type VolumeIntensityPoint = {
-  date: string;          // YYYY-MM-DD
+  date: string;
   volume: number;
   intensity: number | null;
 };

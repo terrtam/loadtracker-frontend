@@ -1,3 +1,9 @@
+/**
+ * Types describing shape of App Config.
+ * Defines available body parts and exercises, how exercises map
+ * to set types and what fields each set type requires.
+ */
+
 export type BodyPartCode = string;
 export type ExerciseCode = string;
 export type ExerciseType = string;

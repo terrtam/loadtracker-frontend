@@ -1,3 +1,9 @@
+/**
+ * Component for Volume Charts.
+ * Fetches sessions and derives category-specific volume metrics per body part.
+ * Limits number of entries for chart display.
+ */
+
 import { useEffect, useMemo, useState } from "react";
 import type { BodyPartProfile } from "../../../features/profiles/types";
 import type { Session } from "../../../features/sessions/types";
@@ -8,12 +14,8 @@ import PlyometricChart from "./PlyometricChart";
 import IsometricChart from "./IsometricChart";
 import CardioChart from "./CardioChart";
 
-import {
-  aggregateStrength,
-  aggregatePlyometric,
-  aggregateIsometric,
-  aggregateCardio,
-} from "../utils";
+import { aggregateStrength, aggregatePlyometric, 
+  aggregateIsometric, aggregateCardio,} from "../utils";
 
 import { limitTimeSeries } from "../../../shared/utils/timeSeries";
 

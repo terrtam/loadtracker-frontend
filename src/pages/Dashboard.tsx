@@ -1,3 +1,5 @@
+/* Dashboard page with sidebar navigation and aggregated wellness/volume charts. */
+
 import { useState } from "react";
 import SidebarLayout from "../shared/layout/SidebarLayout";
 import DashboardSidebar from "../shared/layout/DashboardSidebar";
@@ -10,11 +12,8 @@ import { useDashboardAggregation } from "../features/dashboard/useDashboardAggre
 export default function Dashboard() {
   const [showCreate, setShowCreate] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
-  const [selectedProfile, setSelectedProfile] =
-    useState<BodyPartProfile | null>(null);
-
-  const { aggregation, setDaily, setWeekly, setMonthly } =
-    useDashboardAggregation("daily");
+  const [selectedProfile, setSelectedProfile] = useState<BodyPartProfile | null>(null);
+  const { aggregation, setDaily, setWeekly, setMonthly } = useDashboardAggregation("daily");
 
   return (
     <SidebarLayout
@@ -37,8 +36,6 @@ export default function Dashboard() {
         />
       ) : (
         <div className="p-6 space-y-6">
-
-          {/* 🔁 GLOBAL TOGGLE */}
           <div className="flex gap-2">
             <button
               className={`px-3 py-1 rounded ${

@@ -1,3 +1,8 @@
+/** Component for Exercise Sidebar.
+ *  Displays searchable list of exercises sourced from AppConfig.
+ *  Emits the selected exercise code to the parent.
+ */
+
 import { useMemo, useState } from "react";
 import type { AppConfig } from "../../../types/appConfig";
 

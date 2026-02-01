@@ -1,3 +1,9 @@
+/** Component to Create Body Part Profiles in Dashboard.
+ *  Loads body-part metadata from app config.
+ *  Allows selecting a body part and left/right side.
+ *  Submits the profile to the backend.
+*/
+
 import { useEffect, useState } from "react";
 import { createBodyPartProfile } from "../api";
 import { loadAppConfig } from "../../../shared/config/loadConfig";
@@ -9,19 +15,13 @@ type Props = {
   onCancel: () => void;
 };
 
-export default function CreateBodyPartProfile({
-  onSuccess,
-  onCancel,
-}: Props) {
-  const [bodyParts, setBodyParts] =
-    useState<Record<string, string> | null>(null);
-
+export default function CreateBodyPartProfile({ onSuccess, onCancel,}: Props) {
+  const [bodyParts, setBodyParts] = useState<Record<string, string> | null>(null);
   const [bodyPart, setBodyPart] = useState<BodyPartName | "">("");
   const [side, setSide] = useState<"left" | "right">("left");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Load config on mount
   useEffect(() => {
     loadAppConfig()
       .then((config) => setBodyParts(config.bodyParts))
@@ -64,7 +64,6 @@ export default function CreateBodyPartProfile({
         </div>
       )}
 
-      {/* Body part dropdown */}
       <div>
         <label className="block mb-1 font-medium">Body Part</label>
         <select
@@ -81,7 +80,6 @@ export default function CreateBodyPartProfile({
         </select>
       </div>
 
-      {/* Side selector */}
       <div>
         <label className="block mb-1 font-medium">Side</label>
         <div className="flex gap-2">
@@ -106,7 +104,6 @@ export default function CreateBodyPartProfile({
         </div>
       </div>
 
-      {/* Actions */}
       <div className="flex gap-3">
         <button
           type="button"

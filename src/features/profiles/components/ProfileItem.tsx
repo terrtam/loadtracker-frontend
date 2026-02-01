@@ -1,9 +1,14 @@
+/** Component for a Body Part Profile item.
+ *  Displays a single body part profile with its side.
+ *  Supports selection.
+ *  Provides context menu for archiving/unarchiving.
+ *  Loads display labels from app config.
+ *  Notifies parent when profile state changes.
+ */
+
 import { useEffect, useRef, useState } from "react";
 import type { BodyPartProfile } from "../types";
-import {
-  archiveProfile,
-  unarchiveProfile,
-} from "../api";
+import { archiveProfile, unarchiveProfile } from "../api";
 import { loadAppConfig } from "../../../shared/config/loadConfig";
 
 type Props = {
@@ -14,13 +19,8 @@ type Props = {
   onChange: () => void;
 };
 
-export default function ProfileItem({
-  profile,
-  action,
-  isSelected,
-  onSelect,
-  onChange,
-}: Props) {
+export default function ProfileItem({ profile, action, isSelected,
+  onSelect, onChange }: Props) {
   const [open, setOpen] = useState(false);
   const [bodyParts, setBodyParts] =
     useState<Record<string, string> | null>(null);

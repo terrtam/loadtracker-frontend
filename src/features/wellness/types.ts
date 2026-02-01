@@ -1,4 +1,5 @@
-// src/types/wellness.ts
+/** Defines a Wellness Log. */
+
 import type { BodyPartProfile } from "../profiles/types";
 
 export interface WellnessLog {

@@ -1,3 +1,5 @@
+/* Configured Axios client with base API URL and automatic auth token injection. */
+
 import axios from "axios";
 
 const api = axios.create({

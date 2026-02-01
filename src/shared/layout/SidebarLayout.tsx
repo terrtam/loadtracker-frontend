@@ -1,4 +1,5 @@
-// src/components/layout/SidebarLayout.tsx
+/** Layout for pages with a left sidebar and main content */
+
 import type { ReactNode } from "react";
 
 type Props = {

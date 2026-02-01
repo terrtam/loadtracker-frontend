@@ -1,3 +1,8 @@
+/** Utility functions for aggregating wellness data in the chart. 
+ *  Converts wellness logs into averaged time-series points based on
+ *  the selected time aggregation.
+*/
+
 import type { WellnessLog } from "./types";
 
 export type ChartPoint = {
@@ -7,17 +12,13 @@ export type ChartPoint = {
 
 export type Aggregation = "daily" | "weekly" | "monthly";
 
-/* --------------------------------
-   Date key helpers
---------------------------------- */
-
 function getDateKey(iso: string) {
-  return iso.slice(0, 10); // YYYY-MM-DD
+  return iso.slice(0, 10);
 }
 
 function getWeekKey(iso: string) {
   const d = new Date(iso);
-  const day = (d.getUTCDay() + 6) % 7; // Monday start
+  const day = (d.getUTCDay() + 6) % 7;
   d.setUTCDate(d.getUTCDate() - day);
   return d.toISOString().slice(0, 10);
 }
@@ -26,10 +27,6 @@ function getMonthKey(iso: string) {
   const d = new Date(iso);
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
 }
-
-/* --------------------------------
-   Aggregator
---------------------------------- */
 
 export function aggregateAvg(
   logs: WellnessLog[],

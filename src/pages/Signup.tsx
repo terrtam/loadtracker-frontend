@@ -1,3 +1,8 @@
+/* Signup page submits signup credentials for signup request.
+   Response is JWT token from backend placed in localStorage.
+   Navigates to dashboard upon success. 
+   Error handling for failed signup. */
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";

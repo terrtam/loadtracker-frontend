@@ -1,3 +1,5 @@
+/* Creates React root and renders App component. */
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import '../src/styles/index.css'

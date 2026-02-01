@@ -1,24 +1,19 @@
+/** Page for Wellness History.
+ *  Manage sidebar selection state.
+ *  Load Wellness History from listWellnessLogs API.
+ *  Render Wellness History.
+ *  */
+
 import { useEffect, useState } from "react";
 import BodyPartSidebar from "../features/profiles/components/BodyPartSidebar";
 import { listWellnessLogs } from "../features/wellness/api";
 import type { WellnessLog } from "../features/wellness/types";
 
 export default function WellnessHistoryPage() {
-  /* -------------------------
-     Sidebar selection (CODE, not ID)
-  --------------------------*/
-  const [selectedBodyPartCode, setSelectedBodyPartCode] =
-    useState<string | null>(null);
-
-  /* -------------------------
-     Wellness history
-  --------------------------*/
+  const [selectedBodyPartCode, setSelectedBodyPartCode] = useState<string | null>(null);
   const [logs, setLogs] = useState<WellnessLog[]>([]);
   const [loading, setLoading] = useState(true);
 
-  /* -------------------------
-     Load wellness history
-  --------------------------*/
   useEffect(() => {
     const loadLogs = async () => {
       setLoading(true);
@@ -32,9 +27,6 @@ export default function WellnessHistoryPage() {
     loadLogs();
   }, [selectedBodyPartCode]);
 
-  /* -------------------------
-     Render
-  --------------------------*/
   return (
     <div className="flex h-full">
       {/* Sidebar */}

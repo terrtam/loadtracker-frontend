@@ -1,3 +1,5 @@
+/* Entry page with Login and Sign Up. */
+
 import { Link } from "react-router-dom";
 
 export default function Entry() {

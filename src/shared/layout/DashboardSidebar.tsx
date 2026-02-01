@@ -1,3 +1,8 @@
+/** Layout for Dashboard Sidebar.
+ *  Fetches and reloads profile lists.
+ *  Renders sidebar for selecting, archiving, and restoring body-part profiles.
+ */
+
 import { useEffect, useState } from "react";
 import { getBodyPartProfiles } from "../../features/profiles/api";
 import type { BodyPartProfile } from "../../features/profiles/types";
@@ -10,11 +15,7 @@ type Props = {
 };
 
 
-export default function DashboardSidebar({
-  onAddProfile,
-  selectedProfile,
-  onSelectProfile,
-}: Props) {
+export default function DashboardSidebar({ onAddProfile, selectedProfile, onSelectProfile }: Props) {
   const [activeProfiles, setActiveProfiles] = useState<BodyPartProfile[]>([]);
   const [archivedProfiles, setArchivedProfiles] = useState<BodyPartProfile[]>([]);
 

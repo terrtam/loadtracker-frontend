@@ -1,15 +1,44 @@
-import { useEffect, useState } from "react";
-import { loadAppConfig } from "../shared/config/loadConfig";
-import type { AppConfig } from "../types/appConfig";
-import type { SessionState, ExerciseSet } from "../features/sessions/types";
-import ExerciseSidebar from "../features/sessions/components/ExerciseSidebar";
-import { createSession } from "../features/sessions/api";
-import SidebarLayout from "../shared/layout/SidebarLayout";
+/* Page to Log Session.
+   Loads app config containing exercises, set types and validation rules.
+   Initialize workout session with useSession hook.
+   Renders the session editor UI (exercise selection, sets, fields, RPE).
+   Enforces config-driven completion rules for sets and sessions.
+   Handles UI concerns such as loading state and success feedback.
+*/
 
-const STORAGE_KEY = "draft_session_v1";
+import { useEffect, useState } from "react";
+import SidebarLayout from "../shared/layout/SidebarLayout";
+import ExerciseSidebar from "../features/sessions/components/ExerciseSidebar";
+import { loadAppConfig } from "../shared/config/loadConfig";
+import { useSession } from "../features/sessions/hooks/useSession";
+import type { AppConfig } from "../types/appConfig";
 
 export default function Session() {
   const [config, setConfig] = useState<AppConfig | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    loadAppConfig().then(setConfig);
+  }, []);
+
+  const sessionApi = useSession(config);
+
+  useEffect(() => {
+    if (!successMessage) return;
+
+    const timer = setTimeout(() => {
+      setSuccessMessage(null);
+    }, 3000);
+
+    return () => clearTimeout(timer);
+  }, [successMessage]);
+
+  if (!config) {
+    return <div>Loading session…</div>;
+  }
+
+  const {session, setSession, addExercise, removeExercise, addSet, updateField, updateRpe, 
+    toggleSetComplete, removeSet, canCompleteSession, completeSession} = sessionApi;
 
   const todayLocal = new Date().toISOString().slice(0, 10);
   const oneYearAgoLocal = (() => {
@@ -17,256 +46,34 @@ export default function Session() {
     d.setFullYear(d.getFullYear() - 1);
     return d.toISOString().slice(0, 10);
   })();
-  const [session, setSession] = useState<SessionState>({
-    date: todayLocal,
-    setsByExercise: {},
-  });
 
-
-  /* -------------------------
-     Load app config
-  --------------------------*/
-  useEffect(() => {
-    loadAppConfig().then(setConfig);
-  }, []);
-
-  /* -------------------------
-     Autosave session
-  --------------------------*/
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-  }, [session]);
-
-  if (!config) return <div>Loading session…</div>;
-
-  /* -------------------------
-     Exercise / Set Mutations
-  --------------------------*/
-
-  const addExerciseToSession = (exerciseCode: string) => {
-    setSession((prev) => {
-      if (prev.setsByExercise[exerciseCode]) return prev;
-      return {
-        ...prev,
-        setsByExercise: {
-          ...prev.setsByExercise,
-          [exerciseCode]: [],
-        },
-      };
-    });
-  };
-
-  const removeExercise = (exerciseCode: string) => {
-    setSession((prev) => {
-      const next = { ...prev.setsByExercise };
-      delete next[exerciseCode];
-      return { ...prev, setsByExercise: next };
-    });
-  };
-
-  const addSet = (exerciseCode: string) => {
-    const exercise = config.exercises[exerciseCode];
-    const setTypeCode = config.setTypeByExerciseType[exercise.type];
-    const setType = config.setTypes[setTypeCode];
-
-    const newSet: ExerciseSet = {
-      id: crypto.randomUUID(),
-      exerciseCode,
-      fields: Object.fromEntries(
-        Object.keys(setType.fields).map((k) => [k, undefined])
-      ),
-      rpe: undefined,
-      completed: false,
-    };
-
-    setSession((prev) => ({
-      ...prev,
-      setsByExercise: {
-        ...prev.setsByExercise,
-        [exerciseCode]: [...prev.setsByExercise[exerciseCode], newSet],
-      },
-    }));
-
-  };
-
-  const sanitizeNumber = (
-    value: number | undefined,
-    { min = 0, max }: { min?: number; max?: number } = {}
-  ) => {
-    if (typeof value !== "number" || Number.isNaN(value)) return undefined;
-
-    let v = value;
-    if (min !== undefined) v = Math.max(min, v);
-    if (max !== undefined) v = Math.min(max, v);
-
-    return v;
-  };
-
-
-  const updateField = (
-    exerciseCode: string,
-    setId: string,
-    field: string,
-    value: number | undefined
-  ) => {
-    const safeValue = sanitizeNumber(value, { min: 0 });
-
-    setSession((prev) => ({
-      ...prev,
-      setsByExercise: {
-        ...prev.setsByExercise,
-        [exerciseCode]: prev.setsByExercise[exerciseCode].map((s) =>
-          s.id === setId
-            ? { ...s, fields: { ...s.fields, [field]: safeValue } }
-            : s
-        ),
-      },
-    }));
-  };
-
-
-  const updateRpe = (
-    exerciseCode: string,
-    setId: string,
-    value: number | undefined
-  ) => {
-    const safeValue = sanitizeNumber(value, { min: 1, max: 10 });
-
-    setSession((prev) => ({
-      ...prev,
-      setsByExercise: {
-        ...prev.setsByExercise,
-        [exerciseCode]: prev.setsByExercise[exerciseCode].map((s) =>
-          s.id === setId ? { ...s, rpe: safeValue } : s
-        ),
-      },
-    }));
-  };
-
-
-  const toggleSetComplete = (
-    exerciseCode: string,
-    setId: string,
-    completed: boolean
-  ) => {
-    setSession((prev) => ({
-      ...prev,
-      setsByExercise: {
-        ...prev.setsByExercise,
-        [exerciseCode]: prev.setsByExercise[exerciseCode].map((s) =>
-          s.id === setId ? { ...s, completed } : s
-        ),
-      },
-    }));
-  };
-
-  const removeSet = (exerciseCode: string, setId: string) => {
-    setSession((prev) => ({
-      ...prev,
-      setsByExercise: {
-        ...prev.setsByExercise,
-        [exerciseCode]: prev.setsByExercise[exerciseCode].filter(
-          (s) => s.id !== setId
-        ),
-      },
-    }));
-  };
-
-  /* -------------------------
-     Completion Logic
-  --------------------------*/
-
-  const isSetFieldsComplete = (
-    set: ExerciseSet,
-    completionRequires: string[]
-  ) =>
-    completionRequires.every(
-      (field) => typeof set.fields[field] === "number"
-    );
-
-  const getIncompleteSets = () => {
-    const incomplete: string[] = [];
-
-    Object.entries(session.setsByExercise).forEach(([exerciseCode, sets]) => {
-      const exercise = config.exercises[exerciseCode];
-      const setTypeCode = config.setTypeByExerciseType[exercise.type];
-      const completionRequires =
-        config.setTypes[setTypeCode].completionRequires;
-
-      sets.forEach((set) => {
-        if (
-          !isSetFieldsComplete(set, completionRequires) ||
-          typeof set.rpe !== "number" ||
-          set.completed !== true
-        ) {
-          incomplete.push(set.id);
-        }
-      });
-    });
-
-    return incomplete;
-  };
-
-  const canCompleteSession = () => {
-    const allSets = Object.values(session.setsByExercise).flat();
-    if (allSets.length === 0) return false;
-    return getIncompleteSets().length === 0;
-  };
-
-  /* -------------------------
-     Submit Session
-  --------------------------*/
-
-  const completeSession = async () => {
-    if (!canCompleteSession()) return;
-
-    const payload = {
-      date: new Date(session.date + "T12:00:00").toISOString(),
-      sets: Object.entries(session.setsByExercise).flatMap(
-        ([exerciseCode, sets]) =>
-          sets.map((set) => {
-            if (typeof set.rpe !== "number") {
-              throw new Error("Invariant violated: RPE missing");
-            }
-
-            return {
-              exercise_code: exerciseCode,
-              ...set.fields,
-              rpe: set.rpe,
-            };
-          })
-      ),
-    };
-
+  const handleCompleteSession = async () => {
     try {
-      const savedSession = await createSession(payload);
-
-      console.log("Saved session:", savedSession);
-
-      localStorage.removeItem(STORAGE_KEY);
-      setSession({ date: todayLocal, setsByExercise: {} });
-
-      alert("Session saved!");
-    } catch (err) {
-      console.error("Failed to save session", err);
-      alert("Failed to save session");
+      await completeSession();
+      setSuccessMessage("Session saved");
+    } catch {
+      setSuccessMessage("Failed to save session");
     }
   };
 
-  /* -------------------------
-     Render
-  --------------------------*/
   return (
     <SidebarLayout
       sidebar={
         <ExerciseSidebar
           config={config}
-          onSelectExercise={addExerciseToSession}
+          onSelectExercise={addExercise}
         />
       }
     >
       <div className="max-w-2xl">
         <h1 className="text-2xl font-bold mb-6">Workout Session</h1>
+
+        {successMessage && (
+          <div className="mb-4 rounded bg-green-100 text-green-800 px-4 py-2">
+            {successMessage}
+          </div>
+        )}
+
         <div className="mb-6">
           <input
             type="date"
@@ -307,8 +114,9 @@ export default function Session() {
 
               {sets.map((set, index) => {
                 const canComplete =
-                  isSetFieldsComplete(set, completionRequires) &&
-                  typeof set.rpe === "number";
+                  completionRequires.every(
+                    (f) => typeof set.fields[f] === "number"
+                  ) && typeof set.rpe === "number";
 
                 return (
                   <div
@@ -325,8 +133,6 @@ export default function Session() {
                       <input
                         key={field}
                         type="number"
-                        min={0}
-                        step="any"
                         disabled={set.completed}
                         className="border px-2 py-1 w-24"
                         placeholder={field}
@@ -419,7 +225,7 @@ export default function Session() {
 
           <button
             disabled={!canCompleteSession()}
-            onClick={completeSession}
+            onClick={handleCompleteSession}
             className={`px-4 py-2 rounded text-white ${
               canCompleteSession()
                 ? "bg-green-600"

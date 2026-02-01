@@ -1,3 +1,6 @@
+/* Route guard that checks authentication via /auth/me. 
+   Redirects to /login if unauthorized. */
+
 import { Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import type { ReactNode } from "react";

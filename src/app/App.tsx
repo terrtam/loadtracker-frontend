@@ -1,3 +1,5 @@
+/* Routing structure of app, with public and auth-protected routes. */
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 import ProtectedRoute from "../shared/auth/ProtectedRoute";
@@ -17,23 +19,16 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Public */}
         <Route path="/" element={<Entry />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
-
-        {/* Protected */}
-        <Route
-          element={
-            <ProtectedRoute>
-              <ProtectedLayout />
-            </ProtectedRoute>
-          }
-        >
+        <Route element={
+          <ProtectedRoute>
+            <ProtectedLayout />
+          </ProtectedRoute>}>
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/sessions/log" element={<LogSession />} />
-           <Route path="/wellness/log" element={<LogWellness />} />
-          
+          <Route path="/wellness/log" element={<LogWellness />} />
           <Route path="/wellness/history" element={<WellnessHistory />} />
           <Route path="/sessions/history" element={<SessionHistory />} /> 
           <Route path="/settings" element={<AccountSettings />} />

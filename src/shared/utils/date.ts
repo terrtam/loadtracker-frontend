@@ -1,3 +1,8 @@
+/** Formats dates based on daily/weekly/monthly aggregation type. 
+ *  Converts ISO strings from backend into clean chart labels.
+ *  getISOWeekStartUTC() finds start of week.
+*/
+
 export function formatChartDate(
   iso: string,
   aggregation: "daily" | "weekly" | "monthly"
@@ -5,7 +10,6 @@ export function formatChartDate(
   let d: Date;
 
   if (aggregation === "monthly") {
-    // iso = "YYYY-MM"
     const [year, month] = iso.split("-").map(Number);
     d = new Date(Date.UTC(year, month - 1, 1, 12)); // midday UTC
     return d.toLocaleDateString(undefined, {
@@ -14,9 +18,8 @@ export function formatChartDate(
     });
   }
 
-  // iso = "YYYY-MM-DD"
   const [y, m, day] = iso.split("-").map(Number);
-  d = new Date(Date.UTC(y, m - 1, day, 12)); // midday UTC
+  d = new Date(Date.UTC(y, m - 1, day, 12));
 
   if (aggregation === "weekly") {
     const weekStart = getISOWeekStartUTC(d);
@@ -26,7 +29,6 @@ export function formatChartDate(
     });
   }
 
-  // daily
   return d.toLocaleDateString(undefined, {
     month: "short",
     day: "numeric",
@@ -34,8 +36,8 @@ export function formatChartDate(
 }
 
 function getISOWeekStartUTC(date: Date) {
-  const d = new Date(date); // already UTC-safe
-  const day = d.getUTCDay() || 7; // Sunday = 7
-  d.setUTCDate(d.getUTCDate() - day + 1); // Monday
+  const d = new Date(date); 
+  const day = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() - day + 1);
   return d;
 }

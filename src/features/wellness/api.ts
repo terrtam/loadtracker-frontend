@@ -1,17 +1,25 @@
+/**
+ * Wellness API client for wellness-related endpoints.
+ * getAuthHeader() attaches Authorization headers.
+ * createWellnessLog() sends POST request to /api/wellness to create a 
+ * pain/fatigue log for a specific body-part profile.
+ * listWellnessLogs() sends GET request to /api/wellness and maps 
+ * backend snake_case fields into the frontend WellnessLog model.
+ * getWellnessPainSeries() sends GET request to /api/wellness/pain/series
+ * to fetch aggregated pain values over time.
+ * getWellnessFatigueSeries() sends a GET request to /api/wellness/fatigue/series\
+ * to fetch aggregated fatigue values over time.
+ */
+
 import axios from "axios";
 import type { WellnessLog } from "../wellness/types";
 
-const baseUrl =
-  import.meta.env.VITE_API_URL || "http://localhost:3000";
+const baseUrl = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 const getAuthHeader = () => {
   const token = localStorage.getItem("token");
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
-
-/* =====================================================
-   Backend (snake_case) response types
-===================================================== */
 
 type BackendBodyPartProfile = {
   id: number;
@@ -27,10 +35,6 @@ type BackendWellnessLog = {
   fatigue_score: number;
   bodyPartProfile: BackendBodyPartProfile;
 };
-
-/* =====================================================
-   Create
-===================================================== */
 
 export interface CreateWellnessLogInput {
   bodyPartProfileId: number;
@@ -56,10 +60,6 @@ export const createWellnessLog = async (
   return response.data;
 };
 
-/* =====================================================
-   List
-===================================================== */
-
 export interface ListWellnessLogsInput {
   bodyPartProfileId?: number;
   from?: string;
@@ -78,7 +78,6 @@ export const listWellnessLogs = async (
     }
   );
 
-  // 🔁 Normalize snake_case → camelCase
   return response.data.map((log) => ({
     id: log.id,
     loggedAt: log.logged_at,
@@ -93,9 +92,6 @@ export const listWellnessLogs = async (
   }));
 };
 
-/* =====================================================
-   Wellness Analytics
-===================================================== */
 
 export interface WellnessSeriesPoint {
   date: string;
@@ -114,9 +110,7 @@ const serializeSeriesParams = (params: WellnessSeriesParams) => ({
   bodyPartNames: params.bodyPartNames?.join(","),
 });
 
-export const getWellnessPainSeries = async (
-  params: WellnessSeriesParams
-): Promise<WellnessSeriesPoint[]> => {
+export const getWellnessPainSeries = async (params: WellnessSeriesParams): Promise<WellnessSeriesPoint[]> => {
   const response = await axios.get<WellnessSeriesPoint[]>(
     `${baseUrl}/api/wellness/pain/series`,
     {
@@ -128,9 +122,7 @@ export const getWellnessPainSeries = async (
   return response.data;
 };
 
-export const getWellnessFatigueSeries = async (
-  params: WellnessSeriesParams
-): Promise<WellnessSeriesPoint[]> => {
+export const getWellnessFatigueSeries = async (params: WellnessSeriesParams): Promise<WellnessSeriesPoint[]> => {
   const response = await axios.get<WellnessSeriesPoint[]>(
     `${baseUrl}/api/wellness/fatigue/series`,
     {

@@ -1,11 +1,12 @@
-// src/components/volume/PlyometricChart.tsx
+/** Component for Plyometric Chart. 
+ * Wraps BaseDualAxisChart with plyometric-specific labeling and configuration,
+ * displaying volume (Jump Count) over time.
+*/
+
 import type { VolumeIntensityPoint } from "../types";
 import BaseDualAxisChart from "./BaseDualAxisChart";
 
-export default function PlyometricChart({
-  data,
-  aggregation
-}: {
+export default function PlyometricChart({ data, aggregation }: {
   data: VolumeIntensityPoint[];
   aggregation: "daily" | "weekly" | "monthly";  
 }) {

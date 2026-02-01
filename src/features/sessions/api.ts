@@ -1,3 +1,8 @@
+/** API client for workout sessions.
+ *  Handles authentication, API DTOs, and mapping backend responses
+ *  into frontend domain models.
+ */
+
 import type { Session, ExerciseSet } from "./types";
 import axios from "axios";
 
@@ -8,9 +13,6 @@ const getAuthHeader = () => {
   return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
-/* -------------------------
-   API types
---------------------------*/
 interface ApiExerciseSet {
   id: string;
   exercise_code: string;
@@ -27,9 +29,6 @@ interface ApiSession {
   sets: ApiExerciseSet[];
 }
 
-/* -------------------------
-   Create session
---------------------------*/
 export async function createSession(sessionData: {
   date?: string;
   sets: {
@@ -50,9 +49,6 @@ export async function createSession(sessionData: {
   return res.data;
 }
 
-/* -------------------------
-   List sessions
---------------------------*/
 export interface ListSessionsInput {
   bodyPartProfileId?: number;
 }
@@ -65,7 +61,6 @@ export async function listSessions(
     params,
   });
 
-  // Map API response → frontend Session type
   return res.data.map((session) => ({
     id: session.id,
     date: session.date,
@@ -78,8 +73,8 @@ export async function listSessions(
         durationSeconds: set.duration,
       },
       rpe: set.rpe,
-      completed: true, // historical sets are completed
-      bodyPartProfileId: set.body_part_profile_id, // for filtering
+      completed: true,
+      bodyPartProfileId: set.body_part_profile_id,
     })),
   }));
 }

@@ -1,3 +1,10 @@
+/** Component for Wellness Chart.
+ *  Loads wellness log for selected profile.
+ *  Aggregates scores by day/week/month.
+ *  Limit number of points on time series
+ *  Passes processed data to charts for rendering.
+*/
+
 import { useEffect, useMemo, useState } from "react";
 import type { BodyPartProfile } from "../../profiles/types";
 import type { WellnessLog } from "../../wellness/types";

@@ -1,3 +1,13 @@
+/**
+ * Page displaying Session History of workout sets.
+ * loadAppConfig() loads app configuration (exercises, set types, body parts).
+ * listSessions() loads session history.
+ * Flatten sessions into individual sets with exercise name, body parts,
+ * session date, and set type config.
+ * Filter sets by selected body part from BodyPartSidebar
+ * Render date, exercise name, set fields and RPE.
+ */
+
 import { useEffect, useState } from "react";
 import BodyPartSidebar from "../../src/features/profiles/components/BodyPartSidebar";
 import { listSessions } from "../features/sessions/api";
@@ -6,33 +16,15 @@ import type { AppConfig } from "../types/appConfig";
 import type { Session } from "../features/sessions/types";
 
 export default function SessionHistoryPage() {
-  /* -------------------------
-     App config
-  --------------------------*/
   const [config, setConfig] = useState<AppConfig | null>(null);
-
-  /* -------------------------
-     Sidebar selection (BODY PART CODE)
-  --------------------------*/
-  const [selectedBodyPartCode, setSelectedBodyPartCode] =
-    useState<string | null>(null);
-
-  /* -------------------------
-     Session data
-  --------------------------*/
+  const [selectedBodyPartCode, setSelectedBodyPartCode] = useState<string | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [loading, setLoading] = useState(true);
 
-  /* -------------------------
-     Load app config
-  --------------------------*/
   useEffect(() => {
     loadAppConfig().then(setConfig);
   }, []);
 
-  /* -------------------------
-     Load sessions
-  --------------------------*/
   useEffect(() => {
     const loadSessions = async () => {
       setLoading(true);
@@ -51,9 +43,6 @@ export default function SessionHistoryPage() {
     return <div className="p-6">Loading config…</div>;
   }
 
-  /* -------------------------
-     Flatten sets + join to config
-  --------------------------*/
   const allSets = sessions.flatMap((session) =>
     session.sets.map((set) => {
       const exercise = config.exercises[set.exerciseCode];
@@ -75,9 +64,6 @@ export default function SessionHistoryPage() {
     })
   );
 
-  /* -------------------------
-     Filter by selected body part
-  --------------------------*/
   const filteredSets = allSets.filter((set) =>
     selectedBodyPartCode
       ? set.bodyParts.includes(selectedBodyPartCode)
@@ -88,23 +74,16 @@ export default function SessionHistoryPage() {
     ? config.bodyParts[selectedBodyPartCode]
     : "All Body Parts";
 
-
-  /* -------------------------
-     Render
-  --------------------------*/
   return (
     <div className="flex h-full">
-      {/* Sidebar */}
       <BodyPartSidebar
         selectedBodyPartCode={selectedBodyPartCode}
         onSelect={setSelectedBodyPartCode}
         includeAllOption
       />
 
-      {/* Main */}
       <main className="flex-1 max-w-3xl p-6">
         <h1 className="text-2xl font-bold">Session History</h1>
-
         <div className="mb-4 mt-1 text-sm text-muted-foreground">
           Showing:{" "}
           <span className="font-medium text-foreground">
@@ -131,20 +110,15 @@ export default function SessionHistoryPage() {
                 key={set.id}
                 className="flex items-center gap-3 px-3 py-2 text-sm"
               >
-                {/* Date */}
                 <div className="w-16 shrink-0 text-xs text-muted-foreground">
                   {new Date(set.sessionDate).toLocaleDateString("en-US", {
                     month: "2-digit",
                     day: "2-digit",
                   })}
                 </div>
-
-                {/* Exercise */}
                 <div className="w-32 shrink-0 font-medium truncate">
                   {set.exerciseName}
                 </div>
-
-                {/* Set fields */}
                 <div className="flex gap-4">
                   {set.setTypeConfig &&
                     Object.keys(set.setTypeConfig.fields).sort((a, b) => {
@@ -171,8 +145,6 @@ export default function SessionHistoryPage() {
                       }
                     })}
                 </div>
-
-                {/* RPE */}
                 {set.rpe != null && (
                   <div className="ml-auto text-xs text-muted-foreground">
                     RPE {set.rpe}

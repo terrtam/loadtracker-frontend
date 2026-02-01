@@ -1,13 +1,11 @@
+/** Classifies an exercise into a load category based on its code prefix.*/
+
 export type LoadCategory =
   | "strength"
   | "plyometric"
   | "isometric"
   | "cardio";
 
-/**
- * Classification is config-driven, NOT inferred from fields.
- * This prevents silent logic drift.
- */
 export function classifyExercise(
   exerciseCode: string
 ): LoadCategory | null {

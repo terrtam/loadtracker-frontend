@@ -1,12 +1,13 @@
+/** Utility functions for aggregating session data in the chart.
+ * Aggregates session data into volume and intensity time-series
+ * grouped by day, week, or month.
+*/
+
 import type { Session, ExerciseSet } from "../sessions/types";
 import type { BodyPartProfile } from "../profiles/types";
 import type { VolumeIntensityPoint } from "../volume/types";
 
 import appConfig from "../../../public/config/app-config.json";
-
-/* -------------------------------------------------
-   Helpers
--------------------------------------------------- */
 
 function getExerciseMeta(exerciseCode: string) {
   return appConfig.exercises[exerciseCode as keyof typeof appConfig.exercises];
@@ -23,7 +24,7 @@ function exerciseMatchesProfile(
 }
 
 function getDateKey(iso: string) {
-  return iso.slice(0, 10); // YYYY-MM-DD
+  return iso.slice(0, 10);
 }
 
 function getWeekKey(iso: string) {
@@ -36,7 +37,6 @@ function getWeekKey(iso: string) {
 function getMonthKey(iso: string) {
   const d = new Date(iso);
   return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
-  // e.g. 2026-01
 }
 
 type Accumulator = {
@@ -44,19 +44,9 @@ type Accumulator = {
   weightedRpe: number;
 };
 
-
-
-
-/* -------------------------------------------------
-   Core aggregator factory
--------------------------------------------------- */
-
-function aggregateByCategory(
-  sessions: Session[],
-  profile: BodyPartProfile,
+function aggregateByCategory( sessions: Session[],  profile: BodyPartProfile,
   category: "strength" | "plyometric" | "isometric" | "cardio",
-  volumeFn: (set: ExerciseSet) => number,
-  aggregation: "daily" | "weekly" | "monthly"
+  volumeFn: (set: ExerciseSet) => number,  aggregation: "daily" | "weekly" | "monthly"
 ): VolumeIntensityPoint[] {
   const map = new Map<string, Accumulator>();
 
@@ -105,19 +95,8 @@ function aggregateByCategory(
     }));
 }
 
-/* -------------------------------------------------
-   CATEGORY EXPORTS
--------------------------------------------------- */
-
-/**
- * Strength
- * Volume = Σ(weight × reps)
- */
-export function aggregateStrength(
-  sessions: Session[],
-  profile: BodyPartProfile,
-  aggregation: "daily" | "weekly" | "monthly"
-): VolumeIntensityPoint[] {
+export function aggregateStrength( sessions: Session[], profile: BodyPartProfile,
+  aggregation: "daily" | "weekly" | "monthly"): VolumeIntensityPoint[] {
   return aggregateByCategory(
     sessions,
     profile,
@@ -128,15 +107,8 @@ export function aggregateStrength(
   );
 }
 
-/**
- * Plyometric
- * Volume = Σ(jump count)
- */
-export function aggregatePlyometric(
-  sessions: Session[],
-  profile: BodyPartProfile,
-  aggregation: "daily" | "weekly" | "monthly"
-): VolumeIntensityPoint[] {
+export function aggregatePlyometric( sessions: Session[], profile: BodyPartProfile, 
+  aggregation: "daily" | "weekly" | "monthly"): VolumeIntensityPoint[] {
   return aggregateByCategory(
     sessions,
     profile,
@@ -146,15 +118,8 @@ export function aggregatePlyometric(
   );
 }
 
-/**
- * Isometric
- * Volume = Σ(duration_seconds)
- */
-export function aggregateIsometric(
-  sessions: Session[],
-  profile: BodyPartProfile,
-  aggregation: "daily" | "weekly" | "monthly"
-): VolumeIntensityPoint[] {
+export function aggregateIsometric( sessions: Session[], profile: BodyPartProfile,
+  aggregation: "daily" | "weekly" | "monthly"): VolumeIntensityPoint[] {
   return aggregateByCategory(
     sessions,
     profile,
@@ -164,15 +129,8 @@ export function aggregateIsometric(
   );
 }
 
-/**
- * Cardio
- * Volume = Σ(duration_seconds)
- */
-export function aggregateCardio(
-  sessions: Session[],
-  profile: BodyPartProfile,
-  aggregation: "daily" | "weekly" | "monthly"
-): VolumeIntensityPoint[] {
+export function aggregateCardio( sessions: Session[], profile: BodyPartProfile,
+   aggregation: "daily" | "weekly" | "monthly"): VolumeIntensityPoint[] {
   return aggregateByCategory(
     sessions,
     profile,

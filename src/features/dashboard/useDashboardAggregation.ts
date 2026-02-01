@@ -1,3 +1,7 @@
+/** Manages Dashboard Aggregation States.
+ *  Exports setters for daily/weekly/monthly views.
+ */
+
 import { useState } from "react";
 
 export type Aggregation = "daily" | "weekly" | "monthly";

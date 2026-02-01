@@ -1,3 +1,6 @@
+/* Account Settings page allowing authenticated users to change password or delete account.
+   Confirmation and error handling for account settings. */
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -7,7 +10,6 @@ const AccountSettings = () => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -65,10 +67,9 @@ const AccountSettings = () => {
       "This will permanently delete your account. Continue?"
     );
     if (!confirmed) return;
-
-    // Ask for password
+    
     const password = window.prompt("Please enter your password to confirm deletion");
-    if (!password) return; // user cancelled
+    if (!password) return;
 
     try {
       setLoading(true);
@@ -80,7 +81,7 @@ const AccountSettings = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ password }), // now `password` exists
+        body: JSON.stringify({ password }),
       });
 
       if (!res.ok) {
@@ -89,6 +90,7 @@ const AccountSettings = () => {
       }
 
       navigate("/login");
+
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);

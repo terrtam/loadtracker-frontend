@@ -1,13 +1,9 @@
-// src/components/volume/BaseDualAxisChart.tsx
-import {
-  BarChart,
-  Bar,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+/** Component for Dual Axis Charts. 
+ *  Uses a left Y-axis for volume and a right Y-axis for RPE,
+ *  sharing a time-based X-axis.
+ */
+
+import { BarChart, Bar, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import type { VolumeIntensityPoint } from "../types";
 
 import { formatNumber } from "../../../shared/utils/number";
@@ -20,12 +16,7 @@ type Props = {
   aggregation: "daily" | "weekly" | "monthly";
 };
 
-export default function BaseDualAxisChart({
-  title,
-  data,
-  volumeLabel,
-  aggregation,
-}: Props) {
+export default function BaseDualAxisChart({ title, data, volumeLabel, aggregation }: Props) {
   return (
     <div className="border rounded p-3">
       <h3 className="font-medium mb-2">{title}</h3>

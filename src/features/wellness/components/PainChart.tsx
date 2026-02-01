@@ -1,15 +1,13 @@
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
+/**
+ * Component for Pain Chart.
+ * Renders aggregated wellness data (daily / weekly / monthly)
+ * with formatted dates and a fixed 0–10 pain scale.
+ */
+
+import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import type { ChartPoint } from "../../../features/wellness/utils";
 import { formatNumber } from "../../../shared/utils/number";
 import { formatChartDate } from "../../../shared/utils/date";
-
 
 type Props = {
   data: ChartPoint[];
